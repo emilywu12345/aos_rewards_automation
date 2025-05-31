@@ -1,0 +1,18 @@
+platformName: Android
+platformVersion: "14"
+udid: R5CT51B9DZV
+deviceName: SM-A5306
+
+appname: "[UAT] S+ Rewards 1.24.20(25) Android.apk"
+newCommandTimeout: 0
+noReset: False
+unicodeKeyboard: True 
+resetKeyboard: True
+autoGrantPermissions: True
+
+# uat
+appPackage: com.mis.sinorewards.uat
+appActivity: com.mis.sinorewards.MainActivity
+
+ip: 127.0.0.1
+port: 4723
