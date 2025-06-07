@@ -20,15 +20,7 @@ class TestLogin(StartEnd):
         l = LoginPage(self.driver)
         mobile = paramet.login['mobile']
         code = paramet.login['code']
-        try:
-            with allure.step(f"使用帳號 {mobile} 登入系統"):
-                result = l.login_action()
-                assert result, "登入失敗"
-                logging.info("登入測試完成，成功登入系統")
-        except AssertionError as e:
-            allure.attach(self.driver.get_screenshot_as_png(), name="登入失敗截圖", attachment_type=allure.attachment_type.PNG)
-            logging.error(f"登入失敗: {e}")
-            raise
-
-if __name__ == '__main__':
-    pytest.main([__file__, '-v', '--alluredir=../reports/allure-results'])
+        with allure.step(f"使用帳號 {mobile} 登入系統"):
+            result = l.login_action()
+            assert result, "登入失敗"
+            logging.info("登入測試完成，成功登入系統")
