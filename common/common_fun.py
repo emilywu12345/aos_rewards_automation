@@ -10,15 +10,16 @@ from selenium.webdriver.common.actions import interaction
 from appium.webdriver import WebElement
 from common.desired_caps import appium_desired
 import logging.config
-from baseView.basicView import BaseView
+from page_objects.basepage import BasePage
 import datetime
 from datetime import datetime
 import time
 import os
 import re
+import allure
 
 
-class Common(BaseView):
+class Common(BasePage):
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -106,12 +107,18 @@ class Common(BaseView):
         return now_time
 
     def getScreenShot(self, module):
-        """截圖"""
-        time = self.getTime()
-        image_file = os.path.dirname(os.path.dirname(__file__)) + '/screenshots/%s_%s.png' % (module, time)
-        logging.info('get %s screenshot' % module)
+        """截圖并集成Allure"""
+        time_str = self.getTime()
+        image_file = os.path.dirname(os.path.dirname(__file__)) + f'/screenshots/{module}_{time_str}.png'
+        logging.info(f'get {module} screenshot')
         self.driver.get_screenshot_as_file(image_file)
+        try:
+            with open(image_file, 'rb') as f:
+                allure.attach(f.read(), name=f"{module}_截圖", attachment_type=allure.attachment_type.PNG)
+        except Exception as e:
+            logging.warning(f"Allure截圖附件失敗: {e}")
 
+    @allure.step("啟動APP")
     def startApp(self):
 
         """啟動 APP"""
@@ -139,6 +146,7 @@ class Common(BaseView):
         # 点击键盘返回健收起键盘
         # self.driver.keyevent(4)
 
+    @allure.step("停止APP")
     def stopApp(self):
         """停止 APP"""
         logging.info('============stopApp===============')

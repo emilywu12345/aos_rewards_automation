@@ -3,7 +3,7 @@ platformVersion: "14"
 udid: R5CT51B9DZV
 deviceName: SM-A5306
 
-appname: "[UAT] S+ Rewards 1.24.20(25) Android.apk"
+appname: "[UAT] S+ Rewards 1.24.23(29) Android.apk"
 newCommandTimeout: 0
 noReset: False
 unicodeKeyboard: True 

@@ -1,6 +1,16 @@
-class BaseView(object):
+# -*- coding: UTF-8 -*-
+import yaml
+import logging.config
+from appium import webdriver
+from appium.options.android import UiAutomator2Options
+from selenium.webdriver.common.by import By
+import os
+
+
+
+class BasePage():
     def __init__(self, driver):
-        self.driver = driver
+            self.driver = driver
 
     def find_element(self, *loc):
         return self.driver.find_element(*loc)

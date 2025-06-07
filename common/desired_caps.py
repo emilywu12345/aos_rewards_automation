@@ -27,6 +27,7 @@ def appium_desired():
         data = yaml.load(file, Loader=yaml.FullLoader)
 
     desired_caps = {}
+    desired_caps['udid'] = data['udid']
     desired_caps['platformName'] = data['platformName']
 
     desired_caps['platformVersion'] = data['platformVersion']
