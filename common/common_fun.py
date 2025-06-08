@@ -47,14 +47,14 @@ class Common(BasePage):
         x2 = int(l[0] * 0.25)
         self.swipe(x1, y1, x2, y1, 1000)
 
-    def swipeUp(self):
-        """向上滑動"""
-        logging.info('swipeUp')
+    def swipeUp(self, distance=200):
+        """向上滑動，可指定滑動距離（像素，默認200）"""
+        logging.info(f'swipeUp, distance={distance}')
         l = self.get_screenSize()
         x1 = int(l[0] * 0.5)
         y1 = int(l[1] * 0.9)
         x2 = int(l[0] * 0.5)
-        y2 = int(l[1] * 0.2)
+        y2 = max(int(l[1] * 0.9) - distance, 0)
         self.driver.swipe(x1, y1, x2, y2, 1000)
 
     def swipeDown(self):

@@ -32,10 +32,16 @@ class LoginPage(Common):
 
     # 返回按鈕
     backBtn = (By.XPATH, '//android.widget.Button[@content-desc="Go back"]/android.widget.ImageView')
-    # 登入元素定位
-    # 首頁登入按鈕
-    loginBtn = (By.XPATH, '//android.widget.TextView[@text="登入或注册以探索更多！"]')
     
+    # 登入元素定位
+    # 我的賬戶菜單按鈕（根据 Inspector 精准 class+content-desc）
+    myAccountBtn = (By.XPATH, '//android.view.View[@content-desc="我的帐户"]')
+    # 立即加入
+    joinNowBtn = (By.XPATH, '//android.view.ViewGroup[@content-desc="立即加入"]')
+
+    # 登入或註冊按鈕
+    loginBtn = (By.XPATH, '//android.view.ViewGroup[@content-desc="登入 / 加入 S⁺ REWARDS"]')
+
     #  個人資料收集框
     personalData = (By.XPATH, '(//android.widget.TextView[@resource-id="RNE__Checkbox__Icon"])[1]')
     #  同意S+ REWARDS服務條款框
@@ -54,44 +60,66 @@ class LoginPage(Common):
     codeInput = (By.XPATH, '//android.widget.EditText[@resource-id="RNE__Input__text-input"]')
     # 首頁我的獎賞
     myReward = (By.XPATH, '//android.widget.TextView[@text="我的奖赏"]')
+
     # 判斷是否已登入，返回True/False
     def is_logged_in(self):
-        """判斷是否已登入，返回True/False"""
+        """判斷是否已登入,返回True/False"""
         try:
             self.find_element_wait(self.myReward, timeout=5)
             return True
+            self.getScreenShot
         except Exception:
             return False
+            self.getScreenShot('未登入狀態')
 
-    def find_element_wait(self, locator, timeout=10):
-        """顯式等待元素出現並返回元素"""
-        wait = WebDriverWait(self.driver, timeout, 0.5)
-        return wait.until(EC.presence_of_element_located(locator))
 
-    # 登入操作
     @allure.step("執行正常登入操作")
     def login_action(self):
-        logging.info('==========mobile_login===========')
+        logging.info('==========mobile_login==========='
+)
         try:
+            time.sleep(1)
+            # self.start_app()
+            # 允許權限彈窗
+            self.find_element(*self.agreeBtn).click()
             time.sleep(2)
-            self.start_app()
+            # 跳過啟動圖
+            self.find_element(*self.skipBtn).click()
+            # time.sleep(5)
+            # # 點擊廣告
+            # self.find_element(*self.adCloseBtn).click()
+            # # 點擊返回按鈕
+            # time.sleep(2)
+            # self.find_element(*self.backBtn).click()
             time.sleep(2)
-            self.find_element_wait(self.loginBtn).click()
-            self.swipeUp()
-            self.find_element_wait(self.personalData).click()
-            self.find_element_wait(self.agreeCheck).click()
-            self.find_element_wait(self.agreeCheck1).click()
-            self.find_element_wait(self.acceptBtn).click()
-            self.find_element_wait(self.mobileBtn).click()
-            self.find_element_wait(self.mobileInput).send_keys(paramet.login['mobile'])
+            self.find_element(*self.myAccountBtn).click()
+            self.find_element(*self.joinNowBtn).click()
+            time.sleep(1)
+            self.find_element(*self.loginBtn).click()
+            time.sleep(10)
+            # 向上滑動多次，確保元素可見
+            for _ in range(20):
+                self.swipeUp()
+                time.sleep(0.3)
+            # 點擊個人資料收集框、同意服務條款和隱私政策
+            self.find_element(*self.personalData).click()
+            self.find_element(*self.agreeCheck).click()
+            self.find_element(*self.agreeCheck1).click()
+            self.find_element(*self.acceptBtn).click()
+            self.find_element(*self.mobileBtn).click()
+            self.find_element(*self.mobileInput).send_keys(paramet.login['mobile'])
             logging.info('mobile is:%s' % paramet.login['mobile'])
-            self.find_element_wait(self.getCodeBtn).click()
-            self.find_element_wait(self.codeInput).send_keys(paramet.login['code'])
+            self.find_element(*self.getCodeBtn).click()
+            self.find_element(*self.codeInput).send_keys(paramet.login['code'])
             logging.info('code is:%s' % paramet.login['code'])
-            time.sleep(2)
-            self.find_element_wait(self.myReward).click()
-            time.sleep(5)
+            time.sleep(1)  
+            self.find_element(*self.myReward).click()
+            time.sleep(2)  
             return True
+        except NoSuchElementException as e:
+            logging.error(f'登入過程中未找到某些元素: {e}')
+            self.getScreenShot('登入元素未找到')
+            return False    
         except Exception as e:
             logging.error(f'登入失敗: {e}')
             self.getScreenShot('登入失敗')
@@ -102,58 +130,40 @@ class LoginPage(Common):
     def start_app(self):
         """啟動App後處理彈窗、廣告、跳過頁面等"""
         logging.info('==========start_app===========')
-
         try:
+            time.sleep(2)
             # 處理允許權限彈窗
             self.find_element(*self.agreeBtn).click()
-            logging.info("點擊允許權限彈窗")
+            time.sleep(2)
             # 處理跳過啟動圖
             self.find_element(*self.skipBtn).click()
-            logging.info("點擊跳過啟動圖")
+            time.sleep(5)
             # 等待廣告元素出現並點擊關閉
-            time.sleep(5)  # 等待廣告元素加載
-            wait = WebDriverWait(self.driver, 5, 0.5)
-            wait.until(EC.element_to_be_clickable(self.adCloseBtn)).click()
-            time.sleep(4)
-            self.find_element(*self.backBtn).click()  # 點擊返回按鈕
+            WebDriverWait(self.driver, 3, 0.5).until(EC.element_to_be_clickable(self.adCloseBtn)).click()
+            # 點擊返回按鈕
             time.sleep(2)
-            return True
-        except NoSuchElementException:
-            logging.info("未出現廣告彈窗")
-            return False
+            self.find_element(*self.backBtn).click()
+            logging.info('App啟動並處理彈窗/廣告成功')
+        except NoSuchElementException as e:
+            logging.info(f'啟動App時未找到某些元素: {e}')
+            self.getScreenShot('啟動App元素未找到')
 
-    # 啟動App（未登入狀態）
-    @allure.step("啟動App-未登入狀態")
     def start_app_unlogin(self):
-        logging.info('==========start_app_unlogin===========')
-        try:
-            self.start_app()
-            if self.is_logged_in():
-                logging.info('檢測到已登入，執行登出流程')
-                # TODO: 補充登出操作
-                # self.logout_action()
-            else:
-                logging.info('當前為未登入狀態')
-        except Exception as e:
-            logging.error(f'start_app_unlogin異常: {e}')
-            self.getScreenShot('異常_start_app_unlogin')
-            raise
-        return self
+        """启动App并确保未登录状态"""
+        # self.start_app()
+        # 可在此处补充确保未登录的逻辑，如检测/退出已登录账号
+        # 例如：如果已登录则执行登出操作
+        if self.is_logged_in():
+            # TODO: 可补充登出操作
+            logging.info("检测到已登录，建议补充登出操作")
+        else:
+            logging.info("已处于未登录状态")
 
-    # 啟動App（已登入狀態）
-    @allure.step("啟動App-已登入狀態")
     def start_app_login(self):
-        logging.info('==========start_app_login===========')
-        try:
-            self.start_app()
-            if not self.is_logged_in():
-                logging.info('未登入，執行登入流程')
-                if not self.login_action():
-                    raise Exception('登入流程失敗')
-            else:
-                logging.info('已處於登入狀態')
-        except Exception as e:
-            logging.error(f'start_app_login異常: {e}')
-            self.getScreenShot('異常_start_app_login')
-            raise
-        return self
+        """启动App并确保已登录状态"""
+        # self.start_app()
+        if not self.is_logged_in():
+            self.login_action()
+        else:
+            logging.info("已处于已登录状态")
+
